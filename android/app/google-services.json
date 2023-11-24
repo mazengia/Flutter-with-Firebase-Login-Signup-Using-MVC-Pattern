@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "688607727391",
+    "project_id": "loginmvc-32778",
+    "storage_bucket": "loginmvc-32778.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688607727391:android:51329fdfe7dcbfc28e2a2a",
+        "android_client_info": {
+          "package_name": "com.example.flutter_login_signup_using_mvc_pattern_with_firebas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVFTXBDvPYmM6zYf9jU2aO93A0wh6nIUU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
