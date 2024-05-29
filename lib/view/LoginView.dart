@@ -5,7 +5,7 @@ import '../model/UserModel.dart';
 import 'UsersListView.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+  const LoginView({Key? key}) : super(key: key);
 
   @override
   _LoginViewState createState() => _LoginViewState();
@@ -33,22 +33,50 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          TextFormField(
-            onChanged: (value) => setState(() => _user.email = value),
-            decoration: const InputDecoration(labelText: 'Email'),
-          ),
-          TextFormField(
-            onChanged: (value) => setState(() => _user.password = value),
-            decoration: const InputDecoration(labelText: 'Password'),
-          ),
-          ElevatedButton(
-            onPressed: _login,
-            child: const Text('Login'),
-          ),
-          Text(_errorMsg ?? '', style: const TextStyle(color: Colors.red))
-        ],
+      appBar: AppBar(
+        title: Text('Login'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextFormField(
+              onChanged: (value) => setState(() => _user.email = value),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            SizedBox(height: 20),
+            TextFormField(
+              onChanged: (value) => setState(() => _user.password = value),
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _login,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.all(15),
+              ),
+              child: const Text('Login', style: TextStyle(fontSize: 18)),
+            ),
+            SizedBox(height: 10),
+            Text(
+              _errorMsg ?? '',
+              style: TextStyle(color: Colors.red, fontSize: 16),
+            )
+          ],
+        ),
       ),
     );
   }

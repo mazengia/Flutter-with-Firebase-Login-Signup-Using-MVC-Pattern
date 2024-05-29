@@ -14,7 +14,7 @@ class UserController {
         email: user.email,
         password: user.password,
       );
-      return null;
+      // return null;
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
