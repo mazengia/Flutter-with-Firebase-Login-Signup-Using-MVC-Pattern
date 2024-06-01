@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../controller/UserController.dart';
+import '../controller/LoginController.dart';
 import '../model/UserModel.dart';
-import 'UsersListView.dart';
+import 'DrawerVIew.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key);
+  const LoginView({super.key});
 
   @override
-  _LoginViewState createState() => _LoginViewState();
+  LoginViewState createState() => LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class LoginViewState extends State<LoginView> {
   String? _errorMsg;
   final UserModel _user = UserModel(email: '', password: '');
-  final UserController _controller = UserController();
+  final LoginController _controller = LoginController();
 
   void _login() async {
     final errorMsg = await _controller.login(_user);
@@ -25,7 +25,7 @@ class _LoginViewState extends State<LoginView> {
     if (errorMsg == null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => UsersListView()), // Replace UsersListView with the actual name of your user list view
+        MaterialPageRoute(builder: (context) => const DrawerView()), // Replace UsersListView with the actual name of your user list view
       );
     }
   }
@@ -34,7 +34,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
         backgroundColor: Colors.blue,
       ),
       body: Padding(
@@ -51,7 +51,7 @@ class _LoginViewState extends State<LoginView> {
                 fillColor: Colors.white,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
               onChanged: (value) => setState(() => _user.password = value),
               obscureText: true,
@@ -61,19 +61,19 @@ class _LoginViewState extends State<LoginView> {
                 fillColor: Colors.white,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: EdgeInsets.all(15),
+                padding: const EdgeInsets.all(15),
               ),
               child: const Text('Login', style: TextStyle(fontSize: 18)),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               _errorMsg ?? '',
-              style: TextStyle(color: Colors.red, fontSize: 16),
+              style: const TextStyle(color: Colors.red, fontSize: 16),
             )
           ],
         ),

@@ -38,10 +38,16 @@ android {
         applicationId "com.example.flutter_login_signup_using_mvc_pattern_with_firebas"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+//        minSdkVersion flutter.minSdkVersion
+//        targetSdkVersion flutter.targetSdkVersion
+//        versionCode flutterVersionCode.toInteger()
+//        versionName flutterVersionName
+
+
+        minSdkVersion 21  // Minimum SDK version your app supports
+        targetSdkVersion 33 // Set this to the API level you want to target
+        versionCode 1
+        versionName "1.0"
         multiDexEnabled true
     }
 

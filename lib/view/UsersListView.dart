@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../controller/UserController.dart';
-import '../model/CityModel.dart';
+import '../controller/LogOutController.dart';
+import '../model/CityModel.dart'; // Assuming you have a CityModel class
+import 'UserForm.dart';
 
 class UsersListView extends StatefulWidget {
-  final UserController controller = UserController();
+  final LogOutController controller = LogOutController();
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   UsersListView({Key? key}) : super(key: key);
 
   @override
-  _UsersListViewState createState() => _UsersListViewState();
+  UsersListViewState createState() => UsersListViewState();
 }
 
-class _UsersListViewState extends State<UsersListView> {
-  int _rowIndex = 1;
-  final CityModel _cityModel =
-      CityModel(id: '', Name: '', State: '', Country: '');
-  List<Map<String, dynamic>> _users = [];
+class UsersListViewState extends State<UsersListView> {
+  List<City> _users = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -27,36 +26,24 @@ class _UsersListViewState extends State<UsersListView> {
   }
 
   void _fetchUsers() async {
+    setState(() {
+      _isLoading = true;
+    });
     final CollectionReference usersRef = widget._fireStore.collection('cities');
-
-    final snapshot = await usersRef.get();
-    if (snapshot.docs.isNotEmpty) {
-      final cities = snapshot.docs.map((document) {
-        final userData = document.data();
-        if (userData is Map<String, dynamic>) {
-          final userMap = Map<String, dynamic>.from(userData);
-          final id = userMap['id'] as String?;
-          final name = userMap['name'] as String?;
-          final state = userMap['state'] as String?;
-          final country = userMap['country'] as String?;
-          return {
-            'id': id,
-            'name': name,
-            'state': state,
-            'country': country,
-          };
-        } else {
-          return null;
-        }
+    QuerySnapshot<Object?> response;
+    response = await usersRef.get();
+    if (response.docs.isNotEmpty) {
+      final cities = response.docs.map((doc) {
+        return City(id: doc.id, data: doc.data() as Map<String, dynamic>);
       }).toList();
-
-      final filteredUsers = cities.where((user) => user != null).toList();
-
       setState(() {
-        _users = filteredUsers.cast<Map<String, dynamic>>();
+        _users = cities;
+        _isLoading = false;
       });
     } else {
-      print('No users found');
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -77,7 +64,7 @@ class _UsersListViewState extends State<UsersListView> {
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error),
+          content: Text(error.toString()),
           backgroundColor: Colors.red,
         ),
       );
@@ -85,7 +72,7 @@ class _UsersListViewState extends State<UsersListView> {
   }
 
   void updateData(CityModel cityModel) {
-    widget._fireStore.collection('cities').doc('LA').set({
+    widget._fireStore.collection('cities').doc(cityModel.id).set({
       'id': cityModel.id,
       'name': cityModel.Name,
       'state': cityModel.State,
@@ -101,66 +88,127 @@ class _UsersListViewState extends State<UsersListView> {
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error),
+          content: Text(error.toString()),
           backgroundColor: Colors.red,
         ),
       );
     });
   }
 
+  void deleteData(String userId) async {
+    await widget._fireStore.collection('cities').doc(userId).delete();
+    _fetchUsers(); // Refresh the user list after deletion
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("User deleted successfully!"),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('List Of Users'),
-        backgroundColor: Colors.blue,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () async {
-              await widget.controller.logout();
-            },
+      body: Column(
+        children: [
+          _buildAppBar(context),
+          _isLoading
+              ? Center(
+            child: CircularProgressIndicator(),
+          )
+              : Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  child: DataTable(
+                    columns: const [
+                      DataColumn(label: Text('#')),
+                      DataColumn(label: Text('ID')),
+                      DataColumn(label: Text('Name')),
+                      DataColumn(label: Text('State')),
+                      DataColumn(label: Text('Country')),
+                      DataColumn(label: Text('Action')),
+                    ],
+                    rows: _users
+                        .asMap() // Use asMap() to get index for row number
+                        .entries
+                        .map((entry) {
+                      final index = entry.key;
+                      final city = entry.value;
+                      return DataRow(cells: [
+                        DataCell(Text((index + 1).toString())),
+                        DataCell(Text(city.data['id'] ?? '')),
+                        DataCell(Text(city.data['name'] ?? '')),
+                        DataCell(Text(city.data['state'] ?? '')),
+                        DataCell(Text(city.data['country'] ?? '')),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () async {
+                                  await showUserDialog(
+                                    context,
+                                    isEditMode: true,
+                                    title: 'Edit User',
+                                    onSave: updateData,
+                                    documentId: city.id,
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Confirm Deletion'),
+                                        content: Text('Are you sure you want to delete this user?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(); // Close the dialog
+                                            },
+                                            child: Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              deleteData(city.id); // Pass the user ID to the delete function
+                                              Navigator.of(context).pop(); // Close the dialog
+                                            },
+                                            child: Text('Delete'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+
+                            ],
+                          ),
+                        ),
+                      ]);
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SingleChildScrollView(
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('#')),
-                DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('State')),
-                DataColumn(label: Text('Country')),
-                DataColumn(label: Text('Action')),
-              ],
-              rows: _users
-                  .map((user) => DataRow(cells: [
-                        DataCell(Text((_rowIndex++).toString())),
-                        DataCell(Text(user['id'] ?? '')),
-                        DataCell(Text(user['name'] ?? '')),
-                        DataCell(Text(user['state'] ?? '')),
-                        DataCell(Text(user['country'] ?? '')),
-                        DataCell(
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () async {
-                              getDataByEmail(true, user['name']);
-                            },
-                          ),
-                        ),
-                      ]))
-                  .toList(),
-            ),
-          ),
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          getDataByEmail(false, "");
+          await showUserDialog(
+            context,
+            isEditMode: false,
+            title: 'Add New User',
+            onSave: addData,
+             documentId: '',
+          );
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
@@ -168,96 +216,29 @@ class _UsersListViewState extends State<UsersListView> {
     );
   }
 
-  Future<Map<String, dynamic>?> getDataByEmail(
-      bool isEditMode, String email) async {
-    String title = isEditMode ? 'Edit User' : 'Add New User';
-    var response = <String, dynamic>{};
-    try {
-      if (isEditMode) {
-        QuerySnapshot<Map<String, dynamic>> querySnapshot = await widget
-            ._fireStore
-            .collection('cities')
-            .where('name', isEqualTo: email)
-            .get();
-        if (querySnapshot.docs.isNotEmpty) {
-          response = querySnapshot.docs.first.data();
-        }
-      }
-      await showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(title),
-            content: SingleChildScrollView(
-              child: Form(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      initialValue: response['id'] ?? '',
-                      onChanged: (value) =>
-                          setState(() => _cityModel.id = value),
-                      decoration: const InputDecoration(
-                        labelText: 'ID',
-                      ),
-                    ),
-                    TextFormField(
-                      initialValue: response['name'] ?? '',
-                      onChanged: (value) =>
-                          setState(() => _cityModel.Name = value),
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
-                      ),
-                    ),
-                    TextFormField(
-                      initialValue: response['state'] ?? '',
-                      onChanged: (value) =>
-                          setState(() => _cityModel.State = value),
-                      decoration: const InputDecoration(
-                        labelText: 'State',
-                      ),
-                    ),
-                    TextFormField(
-                      initialValue: response['country'] ?? '',
-                      onChanged: (value) =>
-                          setState(() => _cityModel.Country = value),
-                      decoration: const InputDecoration(
-                        labelText: 'Country',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (isEditMode) {
-                    updateData(_cityModel);
-                  } else {
-                    addData(_cityModel);
-                  }
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(40),
+          bottomRight: Radius.circular(40),
         ),
-      );
-    }
-    return null;
+      ),
+      child: AppBar(
+        automaticallyImplyLeading: false, // Set this to false to remove the back arrow
+        title: const Text('List Of Users'),
+        centerTitle: true, // Center the title text
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
   }
+}
+
+class City {
+  final String id;
+  final Map<String, dynamic> data;
+
+  City({required this.id, required this.data});
 }

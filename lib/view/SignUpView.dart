@@ -1,13 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../controller/UserController.dart';
+import '../controller/SignUpController.dart';
 import '../model/UserModel.dart';
+import 'DrawerVIew.dart';
 import 'LoginView.dart';
 
 class SignUpView extends StatelessWidget {
   final UserModel user = UserModel(email: '', password: '');
-  final UserController controller = UserController();
+  final SignUpController controller = SignUpController();
 
-  SignUpView({Key? key}) : super(key: key);
+  SignUpView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +45,6 @@ class SignUpView extends StatelessWidget {
                 // border: OutlineInputBorder(),
               ),
             ),
-
-
-
-
-
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
@@ -86,22 +83,20 @@ class SignUpView extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 // Ensure Firebase is initialized properly before using FirebaseAuth.instance
-                // await FirebaseAuth.instance.signInAnonymously();
 
-                // bool isAuthenticated =
-                //     FirebaseAuth.instance.currentUser != null;
-                // print(FirebaseAuth.instance.currentUser?.email);
-                // if (isAuthenticated) {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(builder: (context) => UsersListView()),
-                //   );
-                // } else {
+                bool isAuthenticated =
+                    FirebaseAuth.instance.currentUser != null;
+                if (isAuthenticated) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DrawerView()),
+                  );
+                } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginView()),
                   );
-                // }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[400],
