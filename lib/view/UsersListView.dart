@@ -187,7 +187,6 @@ class UsersListViewState extends State<UsersListView> {
                                   );
                                 },
                               ),
-
                             ],
                           ),
                         ),
