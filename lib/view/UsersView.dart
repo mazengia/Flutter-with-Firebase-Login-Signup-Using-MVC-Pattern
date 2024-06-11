@@ -106,7 +106,7 @@ class UsersState extends State<UsersView> {
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
-              await widget.controller.logout();
+              // await widget.controller.logout();
             },
           ),
         ],

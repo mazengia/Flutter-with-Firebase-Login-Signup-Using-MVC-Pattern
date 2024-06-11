@@ -40,6 +40,17 @@ dependencies:
   firebase_database: ^10.3.5
   firebase_admin: ^0.2.0
   cloud_firestore: ^4.13.2
+  flutter_sound: ^9.4.17
+  google_ml_kit: ^0.18.0
+  googleapis: ^12.0.0
+  image_picker: ^1.1.2
+  googleapis_auth: ^1.4.1
+  video_player: ^2.8.6
+  flutter_ffmpeg: ^0.4.2
+  file_picker: ^8.0.3
+  flutter_launcher_icons: ^0.13.1
+
+
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +68,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/ethio.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

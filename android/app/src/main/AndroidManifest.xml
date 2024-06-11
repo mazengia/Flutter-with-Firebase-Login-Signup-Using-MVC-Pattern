@@ -2,6 +2,9 @@
     <uses-sdk android:minSdkVersion="21" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
     <application
         android:label="flutter_login_signup_using_mvc_pattern_with_firebas"
         android:name="${applicationName}"

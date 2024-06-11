@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../controller/LogOutController.dart';
 import '../model/CityModel.dart'; // Assuming you have a CityModel class
 import 'UserForm.dart';
 
 class UsersListView extends StatefulWidget {
-  final LogOutController controller = LogOutController();
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   UsersListView({Key? key}) : super(key: key);

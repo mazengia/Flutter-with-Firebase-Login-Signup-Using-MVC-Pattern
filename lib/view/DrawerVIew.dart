@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login_signup_using_mvc_pattern_with_firebas/view/UsersListView.dart';
 import 'package:flutter_login_signup_using_mvc_pattern_with_firebas/view/UsersView.dart';
 
+import '../controller/LogOutController.dart';
+
 class DrawerView extends StatefulWidget {
   const DrawerView({super.key});
 
   @override
-  
   DrawerViewState createState() => DrawerViewState();
 }
 
 class DrawerViewState extends State<DrawerView> {
+  final LogOutController controller = LogOutController();
   String _selectedMenuItem = '';
 
   @override
@@ -83,13 +85,14 @@ class DrawerViewState extends State<DrawerView> {
       ),
     );
   }
-
-  Widget _buildBody() {
+   _buildBody() {
     switch (_selectedMenuItem) {
       case 'Settings':
         return UsersView();
       case 'Users':
         return UsersListView();
+      case 'Logout':
+        controller.logout(context);
       default:
         return const Text('No menu item selected');
     }
