@@ -6,7 +6,7 @@ import 'UserForm.dart';
 class UsersListView extends StatefulWidget {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
-  UsersListView({Key? key}) : super(key: key);
+  UsersListView({super.key});
 
   @override
   UsersListViewState createState() => UsersListViewState();
@@ -110,7 +110,7 @@ class UsersListViewState extends State<UsersListView> {
         children: [
           _buildAppBar(context),
           _isLoading
-              ? Center(
+              ? const Center(
             child: CircularProgressIndicator(),
           )
               : Expanded(
@@ -162,21 +162,21 @@ class UsersListViewState extends State<UsersListView> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: Text('Confirm Deletion'),
-                                        content: Text('Are you sure you want to delete this user?'),
+                                        title: const Text('Confirm Deletion'),
+                                        content: const Text('Are you sure you want to delete this user?'),
                                         actions: <Widget>[
                                           TextButton(
                                             onPressed: () {
                                               Navigator.of(context).pop(); // Close the dialog
                                             },
-                                            child: Text('Cancel'),
+                                            child: const Text('Cancel'),
                                           ),
                                           TextButton(
                                             onPressed: () {
                                               deleteData(city.id); // Pass the user ID to the delete function
                                               Navigator.of(context).pop(); // Close the dialog
                                             },
-                                            child: Text('Delete'),
+                                            child: const Text('Delete'),
                                           ),
                                         ],
                                       );
@@ -206,8 +206,8 @@ class UsersListViewState extends State<UsersListView> {
              documentId: '',
           );
         },
-        child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
       ),
     );
   }

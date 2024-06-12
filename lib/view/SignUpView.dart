@@ -9,14 +9,14 @@ class SignUpView extends StatelessWidget {
   final UserModel user = UserModel(email: '', password: '');
   final SignUpController controller = SignUpController();
 
-  SignUpView({Key? key}) : super(key: key);
+  SignUpView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: const Text('Sign Up'),
         backgroundColor: Colors.blue,
       ),
       body: Padding(
@@ -24,33 +24,33 @@ class SignUpView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
               onChanged: (value) => user.email = value,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 filled: true,
                 fillColor: Colors.white,
                 // border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
               onChanged: (value) => user.password = value,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Password',
                 filled: true,
                 fillColor: Colors.white,
                 // border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 String? errorMessage = await controller.signUp(user);
                 if (errorMessage == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("Successfully signed up!"),
                     backgroundColor: Colors.green,
                   ));
@@ -71,19 +71,19 @@ class SignUpView extends StatelessWidget {
                 backgroundColor: Colors.blue,
                 padding: const EdgeInsets.all(15),
               ),
-              child: Text(
+              child: const Text(
                 'Sign Up',
                 style: TextStyle(fontSize: 18),
               ),
             ),
-            SizedBox(height: 20), // Added SizedBox for spacing
+            const SizedBox(height: 20), // Added SizedBox for spacing
             Row(
               children: [
-                Text(
+                const Text(
                   'Already Have an Account?',
                   style: TextStyle(fontSize: 18),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () async {
                     bool isAuthenticated = FirebaseAuth.instance.currentUser != null;
@@ -102,7 +102,7 @@ class SignUpView extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Sign In',
                     style: TextStyle(fontSize: 18),
                   ),
